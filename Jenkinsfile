@@ -2,7 +2,7 @@ pipeline {
     agent { label 'slave' }
 
     environment {
-        JAVA_HOME = '/usr/lib/jvm/java-21-openjdk-amd64'
+        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
         MAVEN_HOME = '/usr/share/maven'
         PATH = "${JAVA_HOME}/bin:${MAVEN_HOME}/bin:${env.PATH}"
     }
@@ -17,9 +17,9 @@ pipeline {
 
         stage('Set up Java 17') {
             steps {
-                echo 'Setting up Java 21...'
+                echo 'Setting up Java 17...'
                 sh 'sudo apt update'
-                sh 'sudo apt install -y openjdk-21-jdk'
+                sh 'sudo apt install -y openjdk-17-jdk'
             }
         }
 
