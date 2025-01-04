@@ -1,4 +1,4 @@
-@Library('My-Shared-Library@main') _
+@Library('my-shared-library@main') _  // Correct syntax
 
 pipeline {
     agent { label 'slave' }
@@ -10,54 +10,13 @@ pipeline {
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('All code') {
             steps {
-                checkoutCode()
+                All()
             }
         }
 
-        stage('Set up Java 17') {
-            steps {
-                setupJava()
-            }
-        }
-
-        stage('Set up Maven') {
-            steps {
-                setupMaven()
-            }
-        }
-
-        stage('Build with Maven') {
-            steps {
-                buildProject()
-            }
-        }
-
-        stage('Upload Artifact') {
-            steps {
-                echo 'Uploading artifact...'
-                archiveArtifacts artifacts: 'target/petclinic-0.0.1-SNAPSHOT.jar', allowEmptyArchive: true
-            }
-        }
-
-        stage('Run Application') {
-            steps {
-                runApplication()
-            }
-        }
-
-        stage('Validate App is Running') {
-            steps {
-                validateApp()
-            }
-        }
-
-        stage('Gracefully Stop Spring Boot App') {
-            steps {
-                stopApplication()
-            }
-        }
+        
     }
 
     post {
