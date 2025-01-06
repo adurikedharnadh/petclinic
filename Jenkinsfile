@@ -1,4 +1,4 @@
-@Library('My-Shared-Library@main') _  // Correct syntax
+@Library('My-Shared-Library') _
 
 pipeline {
     agent { label 'slave' }
@@ -10,13 +10,82 @@ pipeline {
     }
 
     stages {
-        stage('All code') {
+        stage('Checkout Code') {
             steps {
-                All()
+                script {  
+                All.checkoutcode()
+                }
+
             }
         }
 
-        
+        stage('Set up Java 17') {
+            steps {
+              script { 
+              All.setupjava()
+              }
+            }
+        }
+
+        stage('Set up Maven') {
+            steps {
+                   script {
+                   All.setupmvn()
+                   }
+            }
+        }
+
+        stage('Build with Maven') {
+            steps {
+                  script { 
+                    All.buildproject() 
+                  
+                  }
+            }
+        }
+
+        stage('Tag Build') {
+            steps {
+                script {
+                    def buildTag = "build-${env.BUILD_NUMBER}"
+                    tagBuild(buildTag, "Tagging build number ${env.BUILD_NUMBER}")
+                }
+            }
+        }
+
+    
+
+        stage('Run Application') {
+            steps {
+                   script { 
+                   
+                   }
+            }
+        }
+
+        stage('Validate App is Running') {
+            steps {
+                  script { 
+                  
+                  }
+            }
+        }
+
+        stage('Clean Workspace') {
+            steps {
+                  script { 
+                  
+                  }
+            }
+        }
+
+        stage('Gracefully Stop Spring Boot App') {
+            steps {
+                  script { 
+                  
+                  }
+            }
+        }
     }
 
     post {
