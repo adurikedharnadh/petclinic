@@ -10,6 +10,13 @@
     <name>PetClinic</name>
     <description>Pet Clinic Application</description>
     <packaging>jar</packaging>
+         <distributionManagement>
+    <snapshotRepository>
+        <id>snapshots</id>
+        <name>a0kgbtuoge9of-artifactory-primary-0-snapshots</name>
+        <url>https://trialyoqin4.jfrog.io/artifactory/petclinic-libs-snapshot</url>
+    </snapshotRepository>
+</distributionManagement>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
