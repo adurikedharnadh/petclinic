@@ -1,5 +1,3 @@
-@Library('My-Shared-Library') _
-
 pipeline {
     agent { label 'slave' }
 
@@ -12,85 +10,90 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                script {  
-                All.checkoutcode()
-                }
-
+                echo 'Checking out code...'
+                checkout scm
             }
         }
 
         stage('Set up Java 17') {
             steps {
-              script { 
-              All.setupjava()
-              }
+                echo 'Setting up Java 17...'
+                sh 'sudo apt update'
+                sh 'sudo apt install -y openjdk-17-jdk'
             }
         }
 
         stage('Set up Maven') {
             steps {
-                   script {
-                   All.setupmvn()
-                   }
+                echo 'Setting up Maven...'
+                sh 'sudo apt install -y maven'
             }
         }
 
         stage('Build with Maven') {
             steps {
-                  script { 
-                    All.buildproject() 
-                  
-                  }
+                echo 'Building project with Maven...'
+                sh 'mvn clean package'
             }
         }
 
-        stage('Tag Build') {
+        stage('Upload Artifact') {
             steps {
-                script {
-                    def buildTag = "build-${env.BUILD_NUMBER}"
-                    tagBuild(buildTag, "Tagging build number ${env.BUILD_NUMBER}")
-                }
+                echo 'Uploading artifact...'
+                archiveArtifacts artifacts: 'target/simple-parcel-service-app-1.0-SNAPSHOT.jar', allowEmptyArchive: true
             }
         }
-
-    
 
         stage('Run Application') {
             steps {
-                   script { 
-                   
-                   }
+                echo 'Running Spring Boot application...'
+                sh 'nohup mvn spring-boot:run &'
+                sleep(time: 15, unit: 'SECONDS') // Wait for the application to fully start
+
+                // Fetch the public IP and display the access URL
+                script {
+                    def publicIp = sh(script: "curl -s https://checkip.amazonaws.com", returnStdout: true).trim()
+                    echo "The application is running and accessible at: http://${publicIp}:8080"
+                }
             }
         }
 
         stage('Validate App is Running') {
             steps {
-                  script { 
-                  
-                  }
+                echo 'Validating that the app is running...'
+                script {
+                    def response = sh(script: 'curl --write-out "%{http_code}" --silent --output /dev/null http://localhost:8080', returnStdout: true).trim()
+                    if (response == "200") {
+                        echo 'The app is running successfully!'
+                    } else {
+                        echo "The app failed to start. HTTP response code: ${response}"
+                        currentBuild.result = 'FAILURE'
+                        error("The app did not start correctly!")
+                    }
+                }
             }
         }
 
-        stage('Clean Workspace') {
+        stage('Wait for 2 minutes') {
             steps {
-                  script { 
-                  
-                  }
+                echo 'Waiting for 2 minutes...'
+                sleep(time: 2, unit: 'MINUTES')  // Wait for 2 minutes
             }
         }
 
         stage('Gracefully Stop Spring Boot App') {
             steps {
-                  script { 
-                  
-                  }
+                echo 'Gracefully stopping the Spring Boot application...'
+                sh 'mvn spring-boot:stop'
             }
         }
     }
 
     post {
         always {
-            cleanup()
+            echo 'Cleaning up...'
+            // Any cleanup steps, like stopping the app or cleaning up the environment
+            sh 'pkill -f "mvn spring-boot:run" || true' // Ensure the app is stopped
         }
     }
 }
