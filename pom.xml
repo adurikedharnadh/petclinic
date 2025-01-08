@@ -14,7 +14,7 @@
     <snapshotRepository>
         <id>snapshots</id>
         <name>a0kgbtuoge9of-artifactory-primary-0-snapshots</name>
-        <url>https://trialyoqin4.jfrog.io/artifactory/petclinic-libs-snapshot</url>
+        <url>https://trialyoqin4.jfrog.io/artifactory/pet-clinic-real-libs-snapshot</url>
     </snapshotRepository>
 </distributionManagement>
 
